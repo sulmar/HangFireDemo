@@ -32,6 +32,8 @@ namespace HangFireDemo.Controllers
 
             backgroundJob.Enqueue<ISendRequest>(x => x.SendSms("Hello HangFire!"));
 
+            RecurringJob.AddOrUpdate(() => Console.WriteLine("Daily Job"), Cron.Daily(23, 12));
+
             return View();
         }
 

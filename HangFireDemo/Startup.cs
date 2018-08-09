@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Hangfire;
+using Hangfire.Dashboard.Dark;
 using HangFireDemo.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -38,7 +39,12 @@ namespace HangFireDemo
 
 
             services.AddHangfire(config =>
-                config.UseSqlServerStorage(Configuration.GetConnectionString("HangfireConnection")));
+            {
+                config.UseSqlServerStorage(Configuration.GetConnectionString("HangfireConnection"));
+                config.UseDarkDashboard();
+             }
+                
+            );
 
             services.AddTransient<ISmsService, MySmsService>();
             services.AddTransient<ISendRequest, MySendRequest>();
