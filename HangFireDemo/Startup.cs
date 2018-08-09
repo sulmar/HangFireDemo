@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Hangfire;
+using HangFireDemo.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -31,6 +34,15 @@ namespace HangFireDemo
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            services.AddDbContext<MyContext>(options => options.UseSqlServer(Configuration.GetConnectionString("MyConnection")));
+
+
+            services.AddHangfire(config =>
+                config.UseSqlServerStorage(Configuration.GetConnectionString("HangfireConnection")));
+
+            services.AddTransient<ISmsService, MySmsService>();
+            services.AddTransient<ISendRequest, MySendRequest>();
+            services.AddTransient<IMessagesService, DbMessagesService>();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
@@ -51,6 +63,12 @@ namespace HangFireDemo
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
+
+            app.UseHangfireDashboard();
+            app.UseHangfireServer();
+
+
+            
 
             app.UseMvc(routes =>
             {
