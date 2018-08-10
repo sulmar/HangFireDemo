@@ -22,15 +22,15 @@ namespace HangFireDemo.Controllers
             this.messagesService = messagesService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             // backgroundJob.Enqueue(() => Debug.WriteLine("Background Job completed successfully!"));
 
-            messagesService.Add(new Message { Content = "Hey" });
+            await messagesService.AddAsync(new Message { Content = "Hey" });
 
             backgroundJob.Enqueue(() => LongProcess());
 
-            backgroundJob.Enqueue<ISendRequest>(x => x.SendSms("Hello HangFire!"));
+            backgroundJob.Enqueue<ISendRequest>(x => x.SendSmsAsync("Hello HangFire Async!"));
 
             RecurringJob.AddOrUpdate(() => Console.WriteLine("Daily Job"), Cron.Daily(23, 12));
 
